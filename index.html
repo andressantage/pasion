@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El País de las Pasiones - Andrés Santana</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-slate-900 text-white font-sans">
 
@@ -11,7 +15,7 @@
     </header>
 
     <main class="max-w-5xl mx-auto p-2 pb-1 h-[80vh]">
-        <div class="bg-white rounded-xl overflow-hidden h-full shadow-2xl">
+        <div class="bg-white rounded-xl overflow-hidden h-full shadow-2xl border-4 border-slate-800">
             <embed 
                 src="EL PAIS DE LAS PASIONES.pdf" 
                 type="application/pdf" 
@@ -23,11 +27,47 @@
 
     <footer class="p-1 text-center">
         <p class="mb-4 text-gray-300">¿Deseas la versión extendida?</p>
-        <a href="mailto:ingeniero.andres.santana@gmail.com?subject=Pasion" 
-           class="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-3 rounded-full font-bold transition">
+        <a id="btn-pasion" 
+           href="mailto:ingeniero.andres.santana@gmail.com?subject=Pasion" 
+           class="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-3 rounded-full font-bold transition inline-block shadow-lg">
             Solicitar Versión "Pasión"
         </a>
     </footer>
+
+    <script>
+        // 1. Configuración de variables (Nombres corregidos)
+        const URL_PROYECTO = "https://rbipvhgyhrhmfzhcmoms.supabase.co";
+        const KEY_PROYECTO = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiaXB2aGd5aHJobWZ6aGNtb21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMTA2MjQsImV4cCI6MjA4MTY4NjYyNH0.bUykMfOOmDJckkHydUiYlLjJ93clzvfU0KCh27ivHlw";
+
+        // 2. Inicialización del cliente (Usamos un nombre diferente para evitar el error)
+        const _supabase = supabase.createClient(URL_PROYECTO, KEY_PROYECTO);
+
+        // 3. Función para registrar eventos
+        async function registrarActividad(tipo) {
+            try {
+                const { error } = await _supabase
+                    .from('clicks_analytics')
+                    .insert([{ event_name: tipo }]);
+                
+                if (error) throw error;
+                console.log("Registro exitoso: " + tipo);
+            } catch (err) {
+                console.error("Error al registrar:", err.message);
+            }
+        }
+
+        // --- ACCIONES ---
+
+        // Registrar visita al cargar la página
+        window.onload = () => {
+            registrarActividad('visit_page_open');
+        };
+
+        // Registrar clic en el botón
+        document.getElementById('btn-pasion').addEventListener('click', () => {
+            registrarActividad('click_solicitud_pasion');
+        });
+    </script>
 
 </body>
 </html>
