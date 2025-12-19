@@ -6,6 +6,10 @@
     <title>El País de las Pasiones - Andrés Santana</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Estilos específicos para suavizar el scroll en iOS si fuera necesario */
+        .ios-fix { -webkit-overflow-scrolling: touch; }
+    </style>
 </head>
 <body class="bg-slate-900 text-white font-sans flex flex-col min-h-screen">
 
@@ -16,13 +20,24 @@
 
     <main class="flex-grow max-w-5xl w-full mx-auto p-2 pb-1 flex flex-col items-center gap-4">
         
-        <div class="bg-white rounded-xl overflow-hidden w-full h-[65vh] md:h-[75vh] shadow-2xl border-4 border-slate-800 relative">
+        <div id="pdf-container" class="bg-white rounded-xl overflow-hidden w-full h-[65vh] md:h-[75vh] shadow-2xl border-4 border-slate-800 relative hidden">
             <iframe 
-                src="pasiones.pdf" 
+                id="pdf-frame"
+                src="" 
                 class="w-full h-full" 
                 frameborder="0">
-                <p class="text-black p-4 text-center">Tu navegador no soporta visualización directa. Usa el botón de descarga.</p>
             </iframe>
+        </div>
+
+        <div id="ios-alert" class="hidden w-full h-[50vh] flex flex-col items-center justify-center bg-slate-800 rounded-xl border-2 border-slate-700 p-6 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 text-cyan-400 mb-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+            </svg>
+            <h3 class="text-xl font-bold mb-2">Modo Lectura iOS</h3>
+            <p class="text-gray-400 mb-6">El iPhone requiere abrir el libro en pantalla completa para poder leerlo correctamente.</p>
+            <a href="EL PAIS DE LAS PASIONES.pdf" target="_blank" class="bg-cyan-600 text-white px-8 py-4 rounded-lg font-bold shadow-lg hover:bg-cyan-500 transition w-full max-w-xs">
+                📖 Leer Libro Ahora
+            </a>
         </div>
 
         <a id="btn-descarga" 
@@ -32,55 +47,75 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
             </svg>
-            Descargar Libro (PDF)
+            Descargar Archivo
         </a>
 
     </main>
 
     <footer class="p-4 py-8 text-center bg-slate-800 mt-4">
-        <p class="mb-4 text-gray-300">¿Te gustó lo que leíste?</p>
+        <p class="mb-4 text-gray-300">¿Deseas la versión extendida?</p>
         <a id="btn-pasion" 
-           href="mailto:ingeniero.andres.santana@gmail.com?subject=Solicitud%20Version%20Pasion" 
+           href="mailto:ingeniero.andres.santana@gmail.com?subject=Pasion" 
            class="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-3 rounded-full font-bold transition inline-block shadow-lg border border-cyan-400">
-            Solicitar Versión Extendida "Pasión"
+            Solicitar Versión "Pasión"
         </a>
     </footer>
 
     <script>
-        // 1. Configuración de variables
+        // --- CONFIGURACIÓN SUPABASE ---
         const URL_PROYECTO = "https://rbipvhgyhrhmfzhcmoms.supabase.co";
         const KEY_PROYECTO = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiaXB2aGd5aHJobWZ6aGNtb21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMTA2MjQsImV4cCI6MjA4MTY4NjYyNH0.bUykMfOOmDJckkHydUiYlLjJ93clzvfU0KCh27ivHlw";
-
-        // 2. Inicialización del cliente
         const _supabase = supabase.createClient(URL_PROYECTO, KEY_PROYECTO);
+        const PDF_FILE = "pasiones.pdf";
 
-        // 3. Función para registrar eventos
+        // --- LÓGICA DE DETECCIÓN DE DISPOSITIVO ---
+        
+        function detectarYRenderizar() {
+            // Detectar si es dispositivo iOS (iPhone, iPad, iPod)
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+            const container = document.getElementById('pdf-container');
+            const iframe = document.getElementById('pdf-frame');
+            const iosAlert = document.getElementById('ios-alert');
+
+            if (isIOS) {
+                // CASO IPHONE: Ocultar iframe, mostrar tarjeta especial
+                console.log("Dispositivo iOS detectado. Activando modo compatibilidad.");
+                container.classList.add('hidden');
+                iosAlert.classList.remove('hidden');
+                iosAlert.classList.add('flex'); // Activar flex para centrar contenido
+            } else {
+                // CASO ANDROID / PC: Mostrar iframe normal
+                console.log("Dispositivo estándar. Cargando iframe.");
+                iframe.src = PDF_FILE;
+                container.classList.remove('hidden');
+                iosAlert.classList.add('hidden');
+            }
+        }
+
+        // --- REGISTRO DE ANALÍTICAS ---
         async function registrarActividad(tipo) {
             try {
                 const { error } = await _supabase
                     .from('clicks_analytics')
                     .insert([{ event_name: tipo }]);
-                
                 if (error) throw error;
-                console.log("Registro exitoso: " + tipo);
+                console.log("Analytics: " + tipo);
             } catch (err) {
-                console.error("Error al registrar:", err.message);
+                console.error("Error analytics:", err.message);
             }
         }
 
-        // --- ACCIONES ---
-
-        // Registrar visita al cargar la página
+        // --- EVENTOS ---
         window.onload = () => {
+            detectarYRenderizar();
             registrarActividad('visit_page_open');
         };
 
-        // Registrar clic en solicitud por correo
         document.getElementById('btn-pasion').addEventListener('click', () => {
             registrarActividad('click_solicitud_pasion');
         });
 
-        // NUEVO: Registrar clic en descarga de PDF
         document.getElementById('btn-descarga').addEventListener('click', () => {
             registrarActividad('click_download_pdf');
         });
