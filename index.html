@@ -6,10 +6,6 @@
     <title>El País de las Pasiones - Andrés Santana</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        /* Estilos específicos para suavizar el scroll en iOS si fuera necesario */
-        .ios-fix { -webkit-overflow-scrolling: touch; }
-    </style>
 </head>
 <body class="bg-slate-900 text-white font-sans flex flex-col min-h-screen">
 
@@ -20,39 +16,47 @@
 
     <main class="flex-grow max-w-5xl w-full mx-auto p-2 pb-1 flex flex-col items-center gap-4">
         
-        <div id="pdf-container" class="bg-white rounded-xl overflow-hidden w-full h-[65vh] md:h-[75vh] shadow-2xl border-4 border-slate-800 relative hidden">
-            <iframe 
-                id="pdf-frame"
-                src="" 
-                class="w-full h-full" 
-                frameborder="0">
-            </iframe>
-        </div>
+        <div id="contenedor-android" class="hidden w-full h-[80vh] bg-white rounded-xl overflow-hidden shadow-2xl border-4 border-slate-800">
+            </div>
 
-        <div id="ios-alert" class="hidden w-full h-[50vh] flex flex-col items-center justify-center bg-slate-800 rounded-xl border-2 border-slate-700 p-6 text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 text-cyan-400 mb-4">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-            </svg>
-            <h3 class="text-xl font-bold mb-2">Modo Lectura iOS</h3>
-            <p class="text-gray-400 mb-6">El iPhone requiere abrir el libro en pantalla completa para poder leerlo correctamente.</p>
-            <a href="EL PAIS DE LAS PASIONES.pdf" target="_blank" class="bg-cyan-600 text-white px-8 py-4 rounded-lg font-bold shadow-lg hover:bg-cyan-500 transition w-full max-w-xs">
-                📖 Leer Libro Ahora
-            </a>
-        </div>
+        <a id="contenedor-iphone" 
+           href="pasiones.pdf" 
+           target="_blank"
+           class="hidden w-full max-w-md mx-auto relative group cursor-pointer transform transition hover:scale-[1.02]">
+            
+            <div class="rounded-xl overflow-hidden shadow-2xl border-4 border-slate-700 relative">
+                <img src="portada.JPG" 
+                     alt="Portada del Libro - Toca para leer" 
+                     class="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition"
+                     onerror="this.src='https://via.placeholder.com/400x600/334155/ffffff?text=Portada+del+Libro';"> 
+                
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="bg-black/60 rounded-full p-4 backdrop-blur-sm border border-cyan-400/50 shadow-lg group-hover:scale-110 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-cyan-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="absolute bottom-0 w-full bg-gradient-to-t from-black/90 to-transparent p-4 pt-12 text-center">
+                    <p class="text-cyan-300 font-bold text-lg">Tocar para leer</p>
+                </div>
+            </div>
+        </a>
 
         <a id="btn-descarga" 
            href="pasiones.pdf" 
            download="El_Pais_de_las_Pasiones_Andres_Santana.pdf"
-           class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-lg font-bold transition shadow-lg w-full md:w-auto justify-center">
+           class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-lg font-bold transition shadow-lg w-full md:w-auto justify-center mt-2">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
             </svg>
-            Descargar Archivo
+            Descargar PDF
         </a>
 
     </main>
 
-    <footer class="p-4 py-8 text-center bg-slate-800 mt-4">
+    <footer class="p-4 py-8 text-center bg-slate-800 mt-auto">
         <p class="mb-4 text-gray-300">¿Deseas la versión extendida?</p>
         <a id="btn-pasion" 
            href="mailto:ingeniero.andres.santana@gmail.com?subject=Pasion" 
@@ -62,63 +66,66 @@
     </footer>
 
     <script>
-        // --- CONFIGURACIÓN SUPABASE ---
+        // --- CONFIGURACIÓN ---
         const URL_PROYECTO = "https://rbipvhgyhrhmfzhcmoms.supabase.co";
         const KEY_PROYECTO = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiaXB2aGd5aHJobWZ6aGNtb21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMTA2MjQsImV4cCI6MjA4MTY4NjYyNH0.bUykMfOOmDJckkHydUiYlLjJ93clzvfU0KCh27ivHlw";
         const _supabase = supabase.createClient(URL_PROYECTO, KEY_PROYECTO);
         const PDF_FILE = "pasiones.pdf";
 
-        // --- LÓGICA DE DETECCIÓN DE DISPOSITIVO ---
-        
-        function detectarYRenderizar() {
-            // Detectar si es dispositivo iOS (iPhone, iPad, iPod)
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        // --- LÓGICA DE DETECCIÓN ---
+        function inicializarSitio() {
+            // Detectar iOS de forma robusta
+            const esIphone = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            
+            const divAndroid = document.getElementById('contenedor-android');
+            const divIphone = document.getElementById('contenedor-iphone');
 
-            const container = document.getElementById('pdf-container');
-            const iframe = document.getElementById('pdf-frame');
-            const iosAlert = document.getElementById('ios-alert');
-
-            if (isIOS) {
-                // CASO IPHONE: Ocultar iframe, mostrar tarjeta especial
-                console.log("Dispositivo iOS detectado. Activando modo compatibilidad.");
-                container.classList.add('hidden');
-                iosAlert.classList.remove('hidden');
-                iosAlert.classList.add('flex'); // Activar flex para centrar contenido
+            if (esIphone) {
+                // --- MODO IPHONE ---
+                // Mostramos la imagen de portada y ocultamos el embed
+                console.log("Modo iPhone: Activado");
+                divAndroid.classList.add('hidden');
+                divIphone.classList.remove('hidden');
+                divIphone.classList.add('block'); // Aseguramos display block
             } else {
-                // CASO ANDROID / PC: Mostrar iframe normal
-                console.log("Dispositivo estándar. Cargando iframe.");
-                iframe.src = PDF_FILE;
-                container.classList.remove('hidden');
-                iosAlert.classList.add('hidden');
+                // --- MODO ANDROID / PC ---
+                // Ocultamos la imagen y cargamos el embed real
+                console.log("Modo Estándar: Activado");
+                divIphone.classList.add('hidden');
+                divAndroid.classList.remove('hidden');
+                
+                // Inyectamos el embed
+                divAndroid.innerHTML = `
+                    <embed 
+                        src="${PDF_FILE}" 
+                        type="application/pdf" 
+                        width="100%" 
+                        height="100%" 
+                    />
+                `;
             }
         }
 
-        // --- REGISTRO DE ANALÍTICAS ---
+        // --- ANALYTICS ---
         async function registrarActividad(tipo) {
             try {
-                const { error } = await _supabase
-                    .from('clicks_analytics')
-                    .insert([{ event_name: tipo }]);
-                if (error) throw error;
-                console.log("Analytics: " + tipo);
-            } catch (err) {
-                console.error("Error analytics:", err.message);
-            }
+                await _supabase.from('clicks_analytics').insert([{ event_name: tipo }]);
+            } catch (e) { console.error(e); }
         }
 
-        // --- EVENTOS ---
+        // --- LISTENERS ---
         window.onload = () => {
-            detectarYRenderizar();
+            inicializarSitio();
             registrarActividad('visit_page_open');
         };
 
-        document.getElementById('btn-pasion').addEventListener('click', () => {
-            registrarActividad('click_solicitud_pasion');
+        // Clic en la portada (iPhone)
+        document.getElementById('contenedor-iphone').addEventListener('click', () => {
+            registrarActividad('click_read_iphone');
         });
 
-        document.getElementById('btn-descarga').addEventListener('click', () => {
-            registrarActividad('click_download_pdf');
-        });
+        document.getElementById('btn-pasion').addEventListener('click', () => registrarActividad('click_solicitud_pasion'));
+        document.getElementById('btn-descarga').addEventListener('click', () => registrarActividad('click_download_pdf'));
     </script>
 
 </body>
