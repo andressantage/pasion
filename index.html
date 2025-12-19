@@ -16,16 +16,16 @@
 
     <main class="flex-grow max-w-5xl w-full mx-auto p-2 pb-1 flex flex-col items-center gap-4">
         
-        <div id="contenedor-android" class="hidden w-full h-[80vh] bg-white rounded-xl overflow-hidden shadow-2xl border-4 border-slate-800">
+        <div id="vista-escritorio" class="hidden w-full h-[80vh] bg-white rounded-xl overflow-hidden shadow-2xl border-4 border-slate-800">
             </div>
 
-        <a id="contenedor-iphone" 
+        <a id="vista-movil" 
            href="pasiones.pdf" 
            target="_blank"
            class="hidden w-full max-w-md mx-auto relative group cursor-pointer transform transition hover:scale-[1.02]">
             
             <div class="rounded-xl overflow-hidden shadow-2xl border-4 border-slate-700 relative">
-                <img src="portada.JPG" 
+                <img src="portada.jpg" 
                      alt="Portada del Libro - Toca para leer" 
                      class="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition"
                      onerror="this.src='https://via.placeholder.com/400x600/334155/ffffff?text=Portada+del+Libro';"> 
@@ -39,7 +39,7 @@
                 </div>
                 
                 <div class="absolute bottom-0 w-full bg-gradient-to-t from-black/90 to-transparent p-4 pt-12 text-center">
-                    <p class="text-cyan-300 font-bold text-lg">Tocar para leer</p>
+                    <p class="text-cyan-300 font-bold text-lg animate-pulse">Tocar para leer libro</p>
                 </div>
             </div>
         </a>
@@ -74,28 +74,26 @@
 
         // --- LÓGICA DE DETECCIÓN ---
         function inicializarSitio() {
-            // Detectar iOS de forma robusta
-            const esIphone = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            // Detectamos cualquier dispositivo móvil (Android, iPhone, iPad, etc.)
+            const esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             
-            const divAndroid = document.getElementById('contenedor-android');
-            const divIphone = document.getElementById('contenedor-iphone');
+            const divEscritorio = document.getElementById('vista-escritorio');
+            const divMovil = document.getElementById('vista-movil');
 
-            if (esIphone) {
-                // --- MODO IPHONE ---
-                // Mostramos la imagen de portada y ocultamos el embed
-                console.log("Modo iPhone: Activado");
-                divAndroid.classList.add('hidden');
-                divIphone.classList.remove('hidden');
-                divIphone.classList.add('block'); // Aseguramos display block
+            if (esMovil) {
+                // --- MODO MÓVIL (Android + iOS) ---
+                console.log("Dispositivo Móvil detectado: Activando vista de Portada.");
+                divEscritorio.classList.add('hidden');
+                divMovil.classList.remove('hidden');
+                divMovil.classList.add('block');
             } else {
-                // --- MODO ANDROID / PC ---
-                // Ocultamos la imagen y cargamos el embed real
-                console.log("Modo Estándar: Activado");
-                divIphone.classList.add('hidden');
-                divAndroid.classList.remove('hidden');
+                // --- MODO ESCRITORIO (PC) ---
+                console.log("PC detectada: Activando Embed.");
+                divMovil.classList.add('hidden');
+                divEscritorio.classList.remove('hidden');
                 
-                // Inyectamos el embed
-                divAndroid.innerHTML = `
+                // Inyectamos el embed solo si es PC para ahorrar recursos en móvil
+                divEscritorio.innerHTML = `
                     <embed 
                         src="${PDF_FILE}" 
                         type="application/pdf" 
@@ -119,9 +117,9 @@
             registrarActividad('visit_page_open');
         };
 
-        // Clic en la portada (iPhone)
-        document.getElementById('contenedor-iphone').addEventListener('click', () => {
-            registrarActividad('click_read_iphone');
+        // Clic en la portada (Móviles)
+        document.getElementById('vista-movil').addEventListener('click', () => {
+            registrarActividad('click_read_mobile');
         });
 
         document.getElementById('btn-pasion').addEventListener('click', () => registrarActividad('click_solicitud_pasion'));
