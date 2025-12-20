@@ -14,10 +14,10 @@
         <p class="text-gray-400">Andrés Santana - Versión Concisa</p>
     </header>
 
-    <main class="flex-grow max-w-5xl w-full mx-auto p-2 pb-1 flex flex-col items-center gap-4">
+    <main class="flex-grow max-w-5xl w-full mx-auto p-2 pb-1 flex flex-col items-center gap-1">
         
-        <div id="vista-escritorio" class="hidden w-full h-[70vh] bg-white rounded-xl overflow-hidden shadow-2xl border-4 border-slate-800">
-            </div>
+        <div id="vista-escritorio" class="hidden w-full h-[80vh] bg-white rounded-xl overflow-hidden shadow-2xl border-4 border-slate-800">
+        </div>
 
         <a id="vista-movil" 
            href="pasiones.pdf" 
@@ -47,7 +47,7 @@
         <a id="btn-descarga" 
            href="pasiones.pdf" 
            download="El_Pais_de_las_Pasiones_Andres_Santana.pdf"
-           class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-lg font-bold transition shadow-lg w-full md:w-auto justify-center mt-2">
+           class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-2 rounded-lg font-bold transition shadow-lg w-full md:w-auto justify-center mt-1 cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
             </svg>
@@ -56,76 +56,89 @@
 
     </main>
 
-    <footer class="p-4 py-8 text-center bg-slate-800 mt-auto">
-        <p class="mb-4 text-gray-300">¿Deseas la versión extendida?</p>
+    <footer class="p-2 py-4 text-center bg-slate-800 mt-auto">
+        <p class="mb-2 text-gray-300">¿Deseas la versión extendida?</p>
         <a id="btn-pasion" 
            href="mailto:ingeniero.andres.santana@gmail.com?subject=Pasion" 
            class="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-3 rounded-full font-bold transition inline-block shadow-lg border border-cyan-400">
-            Solicitar Versión "Pasión"
+            Solicitar Versión
         </a>
     </footer>
 
     <script>
         // --- CONFIGURACIÓN ---
         const URL_PROYECTO = "https://rbipvhgyhrhmfzhcmoms.supabase.co";
+        // NOTA: Esta es tu clave pública (anon key), es seguro tenerla en el front-end 
+        // siempre y cuando tengas las políticas RLS configuradas en la base de datos (Paso 1).
         const KEY_PROYECTO = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiaXB2aGd5aHJobWZ6aGNtb21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMTA2MjQsImV4cCI6MjA4MTY4NjYyNH0.bUykMfOOmDJckkHydUiYlLjJ93clzvfU0KCh27ivHlw";
+        
         const _supabase = supabase.createClient(URL_PROYECTO, KEY_PROYECTO);
         const PDF_FILE = "pasiones.pdf";
 
         // --- LÓGICA DE DETECCIÓN ---
         function inicializarSitio() {
-            // Detectamos cualquier dispositivo móvil (Android, iPhone, iPad, etc.)
             const esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             
             const divEscritorio = document.getElementById('vista-escritorio');
             const divMovil = document.getElementById('vista-movil');
 
             if (esMovil) {
-                // --- MODO MÓVIL (Android + iOS) ---
-                console.log("Dispositivo Móvil detectado: Activando vista de Portada.");
+                // MODO MÓVIL
+                console.log("Móvil detectado.");
                 divEscritorio.classList.add('hidden');
                 divMovil.classList.remove('hidden');
                 divMovil.classList.add('block');
             } else {
-                // --- MODO ESCRITORIO (PC) ---
-                console.log("PC detectada: Activando Embed.");
+                // MODO PC
+                console.log("PC detectada.");
                 divMovil.classList.add('hidden');
                 divEscritorio.classList.remove('hidden');
-                
-                // Inyectamos el embed solo si es PC para ahorrar recursos en móvil
                 divEscritorio.innerHTML = `
-                    <embed 
-                        src="${PDF_FILE}" 
-                        type="application/pdf" 
-                        width="100%" 
-                        height="100%" 
-                    />
+                    <embed src="${PDF_FILE}" type="application/pdf" width="100%" height="100%" />
                 `;
             }
         }
 
         // --- ANALYTICS ---
         async function registrarActividad(tipo) {
+            console.log(`Intentando registrar evento: ${tipo}`);
             try {
-                await _supabase.from('clicks_analytics').insert([{ event_name: tipo }]);
-            } catch (e) { console.error(e); }
+                const { data, error } = await _supabase
+                    .from('clicks_analytics')
+                    .insert([{ event_name: tipo }]);
+                
+                if (error) {
+                    console.error("Error Supabase:", error.message);
+                } else {
+                    console.log("Evento registrado con éxito en DB.");
+                }
+            } catch (e) { 
+                console.error("Error de red o código:", e); 
+            }
         }
 
         // --- LISTENERS ---
         window.onload = () => {
             inicializarSitio();
-            registrarActividad('visit_page_open');
+            registrarActividad('visit_page_open_hoy');
         };
 
-        // Clic en la portada (Móviles)
+        // Click en portada móvil
         document.getElementById('vista-movil').addEventListener('click', () => {
-            registrarActividad('click_read_mobile');
+            registrarActividad('click_read_mobile_hoy');
         });
 
-        document.getElementById('btn-pasion').addEventListener('click', () => registrarActividad('click_solicitud_pasion'));
-        document.getElementById('btn-descarga').addEventListener('click', () => registrarActividad('click_download_pdf'));
+        // Click en botón mail
+        document.getElementById('btn-pasion').addEventListener('click', () => {
+            registrarActividad('click_solicitud_pasion_hoy');
+        });
+
+        // Click en botón DESCARGAR (Lo que pediste)
+        document.getElementById('btn-descarga').addEventListener('click', () => {
+            // Se registra el evento pero NO prevenimos el default, 
+            // así el navegador inicia la descarga inmediatamente.
+            registrarActividad('click_download_pdf_hoy');
+        });
     </script>
-
 </body>
-
 </html>
