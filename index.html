@@ -108,7 +108,7 @@
                     .insert([{ 
                         event_name: tipo,
                         user_agent: navigator.userAgent,      // ← Esto faltaba
-                        platform: navigator.platform           // ← Esto faltaba
+                        platform: navigator.userAgentData?.platform || navigator.platform
                     }]);
                 
                 if (error) {
@@ -120,7 +120,7 @@
                 console.error("Error de red o código:", e); 
             }
         }
-        
+
         // --- LISTENERS ---
         window.onload = () => {
             inicializarSitio();
