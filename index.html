@@ -105,7 +105,11 @@
             try {
                 const { data, error } = await _supabase
                     .from('clicks_analytics')
-                    .insert([{ event_name: tipo }]);
+                    .insert([{ 
+                        event_name: tipo,
+                        user_agent: navigator.userAgent,      // ← Esto faltaba
+                        platform: navigator.platform           // ← Esto faltaba
+                    }]);
                 
                 if (error) {
                     console.error("Error Supabase:", error.message);
@@ -116,7 +120,7 @@
                 console.error("Error de red o código:", e); 
             }
         }
-
+        
         // --- LISTENERS ---
         window.onload = () => {
             inicializarSitio();
