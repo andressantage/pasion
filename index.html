@@ -3,146 +3,297 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El País de las Pasiones - Andrés Santana</title>
+    <title>El País de las Pasiones — Andrés Santana</title>
+    <meta name="description" content="Lee gratis El País de las Pasiones, una novela de ciencia ficción de Andrés Santana.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,600;0,700;1,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink:    '#080b12', steel: '#10151f', steel2: '#171d2b',
+              cyan:   '#2ad4e6', cyan2: '#159fb0',
+              magenta:'#ff4d9d', red: '#ff3d55', amber: '#ffb45c',
+              ice:    '#e7f1f6', muted: '#8ea3b8',
+            },
+            fontFamily: {
+              display: ['"Chakra Petch"', 'system-ui', 'sans-serif'],
+              sans: ['Inter', 'system-ui', 'sans-serif'],
+            },
+          }
+        }
+      }
+    </script>
+
+    <style>
+      body {
+        background-color: #080b12;
+        background-image:
+          radial-gradient(900px 520px at 12% -8%, rgba(42,212,230,0.12), transparent 60%),
+          radial-gradient(820px 520px at 100% 4%, rgba(255,77,157,0.12), transparent 58%),
+          radial-gradient(640px 460px at 50% 120%, rgba(255,180,92,0.08), transparent 60%);
+        background-attachment: fixed;
+      }
+      .neon-title { color:#ff536a; text-shadow: 0 0 6px rgba(255,61,85,.55), 0 0 20px rgba(255,61,85,.4), 0 0 44px rgba(255,77,157,.32); }
+      .neon-cyan { text-shadow: 0 0 10px rgba(42,212,230,.5); }
+      .hairline { height:1px; background: linear-gradient(90deg, transparent, rgba(42,212,230,.6), rgba(255,77,157,.5), transparent); }
+      .cover-frame { box-shadow: 0 24px 50px -18px rgba(0,0,0,.85), 0 0 0 1px rgba(42,212,230,.2); }
+      .glow-cyan { box-shadow: 0 0 22px -4px rgba(42,212,230,.55); }
+      @keyframes attn { 0%,100%{ box-shadow:0 0 22px -4px rgba(42,212,230,.55); transform:none } 50%{ box-shadow:0 0 34px 2px rgba(42,212,230,.9); transform:scale(1.035) } }
+      .attn { animation: attn 1.8s ease-in-out infinite; }
+      @keyframes bob { 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(5px) } }
+      .bob { animation: bob 1.3s ease-in-out infinite; }
+      @keyframes ring { 0%{transform:scale(1);opacity:.7} 70%{transform:scale(1.5);opacity:0} 100%{opacity:0} }
+      .pulse-ring::before { content:''; position:absolute; inset:0; border-radius:9999px; border:2px solid rgba(42,212,230,.85); animation: ring 2.2s ease-out infinite; }
+      @keyframes floatIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+      .float-in { animation: floatIn .5s cubic-bezier(.2,.7,.2,1) both; }
+      .modal-backdrop { transition: opacity .25s ease; }
+      .modal-panel { transition: transform .3s cubic-bezier(.2,.8,.2,1), opacity .25s ease; }
+      .modal-hidden .modal-panel { transform: translateY(24px) scale(.98); opacity:0; }
+      .modal-hidden .modal-backdrop { opacity:0; }
+      a:focus-visible, button:focus-visible, input:focus-visible { outline:2px solid #2ad4e6; outline-offset:3px; border-radius:6px; }
+      @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation:none!important; transition:none!important; } }
+    </style>
 </head>
-<body class="bg-slate-900 text-white font-sans flex flex-col min-h-screen">
+<body class="text-ice font-sans min-h-[100svh] flex flex-col">
 
-    <header class="pt-4 pb-2 p-2 text-center">
-        <h1 class="text-3xl font-bold italic text-cyan-400">El País de las Pasiones</h1>
-        <p class="text-gray-400">Andrés Santana - Versión Concisa</p>
-    </header>
+    <!-- ================= PANTALLA PRINCIPAL (todo visible sin scroll) ================= -->
+    <main class="flex-grow flex flex-col items-center justify-center text-center px-5 py-6 float-in">
 
-    <main class="flex-grow max-w-5xl w-full mx-auto p-2 pb-1 flex flex-col items-center gap-1">
-        
-        <div id="vista-escritorio" class="hidden w-full h-[80vh] bg-white rounded-xl overflow-hidden shadow-2xl border-4 border-slate-800">
-        </div>
+        <p class="uppercase tracking-[0.3em] text-[11px] text-cyan/80 neon-cyan">Novela · Ciencia ficción</p>
+        <h1 class="font-display italic font-700 uppercase text-3xl sm:text-5xl leading-[0.95] tracking-tight neon-title mt-2">
+            El País<br class="sm:hidden"> de las Pasiones
+        </h1>
 
-        <a id="vista-movil" 
-           href="pasiones.pdf" 
-           target="_blank"
-           class="hidden w-full max-w-md mx-auto relative group cursor-pointer transform transition hover:scale-[1.02]">
-            
-            <div class="rounded-xl overflow-hidden shadow-2xl border-4 border-slate-700 relative">
-                <img src="portada.JPG" 
-                     alt="Portada del Libro - Toca para leer" 
-                     class="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition"
-                     onerror="this.src='https://via.placeholder.com/400x600/334155/ffffff?text=Portada+del+Libro';"> 
-                
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="bg-black/60 rounded-full p-4 backdrop-blur-sm border border-cyan-400/50 shadow-lg group-hover:scale-110 transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-cyan-400">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-                        </svg>
-                    </div>
-                </div>
-                
-                <div class="absolute bottom-0 w-full bg-gradient-to-t from-black/90 to-transparent p-4 pt-12 text-center">
-                    <p class="text-cyan-300 font-bold text-lg animate-pulse">Tocar para leer libro</p>
-                </div>
+        <!-- Portada (también tocable para leer) -->
+        <a href="pasiones.pdf" target="_blank" rel="noopener" data-read
+           class="cover-frame group relative block w-36 sm:w-44 rounded-xl overflow-hidden border border-cyan/20 mt-5"
+           aria-label="Leer el libro">
+            <img src="portada.JPG" alt="Portada de El País de las Pasiones"
+                 class="w-full h-auto object-cover"
+                 onerror="this.src='https://placehold.co/440x620/0a0e16/2ad4e6?text=El+Pa%C3%ADs+de+las+Pasiones';">
+            <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <span class="relative flex items-center justify-center w-12 h-12 rounded-full bg-cyan text-ink glow-cyan pulse-ring group-active:scale-95 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75A9 9 0 0 0 6 4.5c-1 0-2 .17-3 .5v14a9 9 0 0 1 3-.5 9 9 0 0 1 6 2.25 9 9 0 0 1 6-2.25 9 9 0 0 1 3 .5v-14c-1-.33-2-.5-3-.5a9 9 0 0 0-6 2.25Zm0 0V21"/></svg>
+                </span>
+            </span>
+        </a>
+
+        <div class="hairline w-40 my-5"></div>
+
+        <!-- LOS TRES BOTONES -->
+        <div class="w-full max-w-xs flex flex-col gap-3">
+            <div class="flex flex-col items-center gap-0.5 text-cyan neon-cyan -mb-1">
+                <span class="text-[11px] font-600 uppercase tracking-[0.2em]">Empieza aquí</span>
+                <svg class="w-5 h-5 bob" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m0 0-6-6m6 6 6-6"/></svg>
             </div>
-        </a>
+            <a href="pasiones.pdf" target="_blank" rel="noopener" data-read
+               class="attn flex items-center justify-center gap-2 bg-cyan hover:bg-cyan2 text-ink text-lg font-600 px-6 py-3.5 rounded-xl glow-cyan transition">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75A9 9 0 0 0 6 4.5c-1 0-2 .17-3 .5v14a9 9 0 0 1 3-.5 9 9 0 0 1 6 2.25 9 9 0 0 1 6-2.25 9 9 0 0 1 3 .5v-14c-1-.33-2-.5-3-.5a9 9 0 0 0-6 2.25Zm0 0V21"/></svg>
+                Leer el libro
+            </a>
 
-        <a id="btn-descarga" 
-           href="pasiones.pdf" 
-           download="El_Pais_de_las_Pasiones_Andres_Santana.pdf"
-           class="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-2 rounded-lg font-bold transition shadow-lg w-full md:w-auto justify-center mt-1 cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-            </svg>
-            Descargar PDF
-        </a>
+            <a id="btn-descarga" href="pasiones.pdf"
+               download="El_Pais_de_las_Pasiones_Andres_Santana.pdf"
+               class="flex items-center justify-center gap-2 text-ice border border-ice/25 hover:border-cyan/60 px-6 py-3.5 rounded-xl font-500 transition active:scale-[.98]">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+                Descargar PDF
+            </a>
 
+            <button id="btn-pasion" type="button"
+                    class="flex items-center justify-center gap-2 bg-gradient-to-r from-cyan to-magenta text-ink font-600 px-6 py-3.5 rounded-xl shadow-lg hover:brightness-110 transition active:scale-[.98]">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+                Solicitar versión extendida
+            </button>
+        </div>
     </main>
 
-    <footer class="p-2 py-4 text-center bg-slate-800 mt-auto">
-        <p class="mb-2 text-gray-300">¿Deseas la versión extendida?</p>
-        <a id="btn-pasion" 
-           href="mailto:ingeniero.andres.santana@gmail.com?subject=Pasion" 
-           class="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-3 rounded-full font-bold transition inline-block shadow-lg border border-cyan-400">
-            Solicitar Versión
-        </a>
-    </footer>
+    <p class="text-muted/60 text-[11px] text-center pb-4">© <span id="year"></span> @Andrés Santana · Todos los derechos reservados</p>
+
+    <!-- ================= MODAL SOLICITUD ================= -->
+    <div id="modal" class="modal-hidden fixed inset-0 z-50 hidden items-center justify-center p-4"
+         role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-backdrop absolute inset-0 bg-ink/85 backdrop-blur-sm" data-close></div>
+
+        <div class="modal-panel relative w-full max-w-md bg-steel2 rounded-2xl border border-cyan/20 shadow-2xl overflow-hidden">
+            <div class="h-1.5 bg-gradient-to-r from-cyan via-magenta to-red"></div>
+
+            <button type="button" data-close aria-label="Cerrar"
+                    class="absolute top-3 right-3 text-muted hover:text-ice p-1.5 rounded-full hover:bg-white/5 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+
+            <form id="form-solicitud" class="p-6 pt-5" novalidate>
+                <h2 id="modal-title" class="font-display font-600 text-2xl text-ice">Solicitar versión extendida</h2>
+                <p class="text-muted text-sm mt-1 mb-5">Te contacto por WhatsApp para enviártela.</p>
+
+                <label class="block mb-4">
+                    <span class="text-sm text-ice/90 font-500">Primer nombre</span>
+                    <input name="nombre" type="text" autocomplete="given-name" placeholder="Ej. Camila"
+                           class="mt-1.5 w-full bg-ink/60 border border-ice/15 rounded-lg px-3.5 py-2.5 text-ice placeholder-muted/60 focus:border-cyan focus:outline-none transition">
+                    <span class="err text-red text-xs mt-1 hidden">Escribe tu nombre.</span>
+                </label>
+
+                <label class="block mb-4">
+                    <span class="text-sm text-ice/90 font-500">Número de WhatsApp</span>
+                    <input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="+57 300 123 4567"
+                           class="mt-1.5 w-full bg-ink/60 border border-ice/15 rounded-lg px-3.5 py-2.5 text-ice placeholder-muted/60 focus:border-cyan focus:outline-none transition">
+                    <span class="err text-red text-xs mt-1 hidden">Ingresa un número válido (con indicativo).</span>
+                </label>
+
+                <label class="block mb-6">
+                    <span class="text-sm text-ice/90 font-500">Correo <span class="text-muted font-400">(opcional)</span></span>
+                    <input name="correo" type="email" autocomplete="email" placeholder="tucorreo@ejemplo.com"
+                           class="mt-1.5 w-full bg-ink/60 border border-ice/15 rounded-lg px-3.5 py-2.5 text-ice placeholder-muted/60 focus:border-cyan focus:outline-none transition">
+                    <span class="err text-red text-xs mt-1 hidden">Revisa el formato del correo.</span>
+                </label>
+
+                <p id="form-error" class="hidden text-red text-sm mb-3 text-center"></p>
+
+                <button type="submit" id="btn-enviar"
+                        class="w-full flex items-center justify-center gap-2 bg-cyan hover:bg-cyan2 text-ink font-600 py-3 rounded-xl glow-cyan transition active:scale-[.98]">
+                    <span class="btn-label">Enviar solicitud</span>
+                    <svg class="btn-spin hidden w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity=".25"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                </button>
+                <p class="text-muted/70 text-[11px] text-center mt-3">Tus datos se usan únicamente para enviarte el libro.</p>
+            </form>
+
+            <div id="form-exito" class="hidden p-8 text-center">
+                <div class="mx-auto w-16 h-16 rounded-full bg-cyan/15 border border-cyan/40 flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2ad4e6" stroke-width="2" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+                </div>
+                <h2 class="font-display font-600 text-2xl text-ice">¡Listo, <span id="exito-nombre">gracias</span>!</h2>
+                <p class="text-muted mt-2">Recibí tu solicitud. Te escribiré por WhatsApp muy pronto.</p>
+                <button type="button" data-close class="mt-6 bg-ice/10 hover:bg-ice/15 text-ice font-500 px-6 py-2.5 rounded-full transition">Cerrar</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // --- CONFIGURACIÓN ---
         const URL_PROYECTO = "https://rbipvhgyhrhmfzhcmoms.supabase.co";
-        // NOTA: Esta es tu clave pública (anon key), es seguro tenerla en el front-end 
-        // siempre y cuando tengas las políticas RLS configuradas en la base de datos (Paso 1).
         const KEY_PROYECTO = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiaXB2aGd5aHJobWZ6aGNtb21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxMTA2MjQsImV4cCI6MjA4MTY4NjYyNH0.bUykMfOOmDJckkHydUiYlLjJ93clzvfU0KCh27ivHlw";
-        
         const _supabase = supabase.createClient(URL_PROYECTO, KEY_PROYECTO);
-        const PDF_FILE = "pasiones.pdf";
 
-        // --- LÓGICA DE DETECCIÓN ---
-        function inicializarSitio() {
-            const esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            
-            const divEscritorio = document.getElementById('vista-escritorio');
-            const divMovil = document.getElementById('vista-movil');
+        document.getElementById('year').textContent = new Date().getFullYear();
 
-            if (esMovil) {
-                // MODO MÓVIL
-                console.log("Móvil detectado.");
-                divEscritorio.classList.add('hidden');
-                divMovil.classList.remove('hidden');
-                divMovil.classList.add('block');
-            } else {
-                // MODO PC
-                console.log("PC detectada.");
-                divMovil.classList.add('hidden');
-                divEscritorio.classList.remove('hidden');
-                divEscritorio.innerHTML = `
-                    <embed src="${PDF_FILE}" type="application/pdf" width="100%" height="100%" />
-                `;
-            }
-        }
-
-        // --- ANALYTICS ---
         async function registrarActividad(tipo) {
-            console.log(`Intentando registrar evento: ${tipo}`);
             try {
-                const { data, error } = await _supabase
-                    .from('clicks_analytics')
-                    .insert([{ 
-                        event_name: tipo,
-                        user_agent: navigator.userAgent,      // ← Esto faltaba
-                        platform: navigator.userAgentData?.platform || navigator.platform
-                    }]);
-                
-                if (error) {
-                    console.error("Error Supabase:", error.message);
-                } else {
-                    console.log("Evento registrado con éxito en DB.");
-                }
-            } catch (e) { 
-                console.error("Error de red o código:", e); 
-            }
+                const { error } = await _supabase.from('clicks_analytics').insert([{
+                    event_name: tipo,
+                    user_agent: navigator.userAgent,
+                    platform: navigator.userAgentData?.platform || navigator.platform
+                }]);
+                if (error) console.error("Analytics:", error.message);
+            } catch (e) { console.error("Analytics red:", e); }
         }
 
-        // --- LISTENERS ---
-        window.onload = () => {
-            inicializarSitio();
-            registrarActividad('visit_page_open_hoy');
-        };
+        // ================= MODAL =================
+        const modal = document.getElementById('modal');
+        const form  = document.getElementById('form-solicitud');
+        const exito = document.getElementById('form-exito');
+        let ultimoFoco = null;
 
-        // Click en portada móvil
-        document.getElementById('vista-movil').addEventListener('click', () => {
-            registrarActividad('click_read_mobile_hoy');
-        });
-
-        // Click en botón mail
-        document.getElementById('btn-pasion').addEventListener('click', () => {
+        function abrirModal() {
+            ultimoFoco = document.activeElement;
+            modal.classList.remove('hidden');
+            requestAnimationFrame(() => modal.classList.remove('modal-hidden'));
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => form.querySelector('input[name="nombre"]').focus(), 120);
             registrarActividad('click_solicitud_pasion_hoy');
+        }
+        function cerrarModal() {
+            modal.classList.add('modal-hidden');
+            document.body.style.overflow = '';
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                form.classList.remove('hidden'); exito.classList.add('hidden');
+                form.reset();
+                form.querySelectorAll('.err').forEach(e => e.classList.add('hidden'));
+                document.getElementById('form-error').classList.add('hidden');
+            }, 250);
+            if (ultimoFoco) ultimoFoco.focus();
+        }
+
+        document.getElementById('btn-pasion').addEventListener('click', abrirModal);
+        modal.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', cerrarModal));
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) cerrarModal();
         });
 
-        // Click en botón DESCARGAR (Lo que pediste)
-        document.getElementById('btn-descarga').addEventListener('click', () => {
-            // Se registra el evento pero NO prevenimos el default, 
-            // así el navegador inicia la descarga inmediatamente.
-            registrarActividad('click_download_pdf_hoy');
+        function mostrarError(input, mostrar) {
+            const err = input.parentElement.querySelector('.err');
+            if (err) err.classList.toggle('hidden', !mostrar);
+            input.classList.toggle('border-red', mostrar);
+            input.classList.toggle('border-ice/15', !mostrar);
+        }
+        function validar() {
+            const nombre = form.nombre, whatsapp = form.whatsapp, correo = form.correo;
+            let ok = true;
+            const nombreOk = nombre.value.trim().length >= 2;
+            mostrarError(nombre, !nombreOk); ok = ok && nombreOk;
+            const digitos = (whatsapp.value.match(/\d/g) || []).length;
+            const waOk = digitos >= 7;
+            mostrarError(whatsapp, !waOk); ok = ok && waOk;
+            const correoVal = correo.value.trim();
+            const correoOk = correoVal === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correoVal);
+            mostrarError(correo, !correoOk); ok = ok && correoOk;
+            return ok;
+        }
+
+        const btnEnviar = document.getElementById('btn-enviar');
+        const errGlobal = document.getElementById('form-error');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errGlobal.classList.add('hidden');
+            if (!validar()) return;
+
+            btnEnviar.disabled = true;
+            btnEnviar.querySelector('.btn-label').textContent = 'Enviando';
+            btnEnviar.querySelector('.btn-spin').classList.remove('hidden');
+
+            const datos = {
+                nombre: form.nombre.value.trim(),
+                whatsapp: form.whatsapp.value.trim(),
+                correo: form.correo.value.trim() || null,
+                user_agent: navigator.userAgent,
+                platform: navigator.userAgentData?.platform || navigator.platform
+            };
+
+            try {
+                const { error } = await _supabase.from('solicitudes').insert([datos]);
+                if (error) throw error;
+                registrarActividad('submit_solicitud_hoy');
+                document.getElementById('exito-nombre').textContent = datos.nombre;
+                form.classList.add('hidden');
+                exito.classList.remove('hidden');
+            } catch (err) {
+                console.error("Solicitud:", err.message || err);
+                errGlobal.textContent = "No se pudo enviar. Revisa tu conexión e inténtalo de nuevo.";
+                errGlobal.classList.remove('hidden');
+            } finally {
+                btnEnviar.disabled = false;
+                btnEnviar.querySelector('.btn-label').textContent = 'Enviar solicitud';
+                btnEnviar.querySelector('.btn-spin').classList.add('hidden');
+            }
         });
+
+        form.querySelectorAll('input').forEach(inp =>
+            inp.addEventListener('input', () => mostrarError(inp, false)));
+
+        // Registrar aperturas de lectura (portada + botón)
+        document.querySelectorAll('[data-read]').forEach(el =>
+            el.addEventListener('click', () => registrarActividad('click_read_mobile_hoy')));
+        document.getElementById('btn-descarga').addEventListener('click', () =>
+            registrarActividad('click_download_pdf_hoy'));
+
+        window.addEventListener('load', () => registrarActividad('visit_page_open_hoy'));
     </script>
 </body>
 </html>
